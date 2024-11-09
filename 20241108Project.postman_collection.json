@@ -241,7 +241,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/api/items",
+							"raw": "localhost:8080/api/items?search=01&page=1&limit=3",
 							"host": [
 								"localhost"
 							],
@@ -249,6 +249,20 @@
 							"path": [
 								"api",
 								"items"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "01"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "3"
+								}
 							]
 						}
 					},

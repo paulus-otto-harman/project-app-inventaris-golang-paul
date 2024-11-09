@@ -16,3 +16,12 @@ func InitItemService(repo repository.Item) *ItemService {
 func (itemService ItemService) Create(item *model.Item) error {
 	return itemService.ItemRepo.Create(item)
 }
+
+func (itemService ItemService) All(name string, page int, limit int) (int, float64, []model.Item, error) {
+	criteria := model.Search{
+		Name:  name,
+		Page:  page,
+		Limit: limit,
+	}
+	return itemService.ItemRepo.All(criteria)
+}
