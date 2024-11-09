@@ -17,7 +17,12 @@ func InitInvestmentHandler(investmentService service.InvestmentService) Investme
 }
 
 func (handler InvestmentHandler) All(w http.ResponseWriter, r *http.Request) {
-	lib.JsonResponse(w).Success(0, "", nil)
+	investment, err := handler.InvestmentService.All()
+	if err != nil {
+		lib.JsonResponse(w).Fail(0, err.Error())
+		return
+	}
+	lib.JsonResponse(w).Success(0, "", investment)
 }
 
 func (handler InvestmentHandler) Get(w http.ResponseWriter, r *http.Request) {

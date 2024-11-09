@@ -1,6 +1,6 @@
 package model
 
 type Investment struct {
-	TotalInvestment  interface{} `json:"total_investment"`
-	DepreciatedValue interface{} `json:"depreciated_value"`
+	TotalInvestment  string `json:"total_investment"`
+	DepreciatedValue string `json:"depreciated_value"`
 }

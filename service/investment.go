@@ -1,6 +1,7 @@
 package service
 
 import (
+	"project/model"
 	"project/repository"
 )
 
@@ -12,10 +13,10 @@ func InitInvestmentService(investmentRepo repository.Investment) *InvestmentServ
 	return &InvestmentService{InvestmentRepo: investmentRepo}
 }
 
-func (investmentService InvestmentService) All() (interface{}, error) {
+func (investmentService InvestmentService) All() (*model.Investment, error) {
 	return investmentService.InvestmentRepo.All()
 }
 
-func (investmentService InvestmentService) Get(id int) (interface{}, error) {
+func (investmentService InvestmentService) Get(id int) (*model.Depreciation, error) {
 	return investmentService.InvestmentRepo.Get(id)
 }
