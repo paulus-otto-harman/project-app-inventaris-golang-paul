@@ -25,6 +25,7 @@ func NewRouter(db *sql.DB) *chi.Mux {
 
 	handleCategory := handler.InitCategoryHandler(*service.InitCategoryService(*repository.InitCategoryRepo(db)))
 	handleItem := handler.InitItemHandler(*service.InitItemService(*repository.InitItemRepo(db)))
+	handleInvestment := handler.InitInvestmentHandler(*service.InitInvestmentService(*repository.InitInvestmentRepo(db)))
 	handleWebTemplate := handler.InitWebPageHandler(*service.InitWebPageService(*repository.InitWebPageRepo(initTemplate())))
 
 	r.Route("/api", func(r chi.Router) {
@@ -42,6 +43,12 @@ func NewRouter(db *sql.DB) *chi.Mux {
 			r.Get("/{id}", handleItem.Get)
 			r.Put("/{id}", handleItem.Update)
 			r.Delete("/{id}", handleItem.Delete)
+
+			r.Route("/investment", func(r chi.Router) {
+				r.Get("/", handleInvestment.All)
+				r.Get("/{id}", handleInvestment.Get)
+			})
+
 		})
 	})
 
