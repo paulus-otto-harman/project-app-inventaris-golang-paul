@@ -13,6 +13,34 @@
 				{
 					"name": "categories",
 					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Peralatan Dapur\",\n    \"description\": \"Kategori untuk peralatan dapur\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/categories",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categories",
+					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -106,34 +134,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "categories",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Peralatan Dapur\",\n    \"description\": \"Kategori untuk peralatan dapur\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/api/categories",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"categories"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -186,6 +186,55 @@
 		{
 			"name": "manajemen barang",
 			"item": [
+				{
+					"name": "items",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": " Printer Canon",
+									"type": "text"
+								},
+								{
+									"key": "category_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "photo_url",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "price",
+									"value": "1500000",
+									"type": "text"
+								},
+								{
+									"key": "purchase_date",
+									"value": "2024-01-05",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/api/items",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "items",
 					"request": {
@@ -270,55 +319,6 @@
 								"api",
 								"items",
 								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "items",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "name",
-									"value": " Printer Canon",
-									"type": "text"
-								},
-								{
-									"key": "category_id",
-									"value": "1",
-									"type": "text"
-								},
-								{
-									"key": "photo_url",
-									"type": "file",
-									"src": []
-								},
-								{
-									"key": "price",
-									"value": "1500000",
-									"type": "text"
-								},
-								{
-									"key": "purchase_date",
-									"value": "2024-01-05",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "localhost:8080/api/items",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"items"
 							]
 						}
 					},

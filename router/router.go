@@ -5,7 +5,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"html/template"
 	"log"
-	"net/http"
 	"project/handler"
 	"project/repository"
 	"project/service"
@@ -30,15 +29,20 @@ func NewRouter(db *sql.DB) *chi.Mux {
 
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/categories", func(r chi.Router) {
-			r.Get("/", func(w http.ResponseWriter, r *http.Request) {})
 			r.Post("/", handleCategory.Create)
+			r.Get("/", handleCategory.All)
+			r.Get("/{id}", handleCategory.Get)
+			r.Put("/{id}", handleCategory.Update)
+			r.Delete("/{id}", handleCategory.Delete)
 		})
 
 		r.Route("/items", func(r chi.Router) {
-			r.Get("/", func(w http.ResponseWriter, r *http.Request) {})
 			r.Post("/", handleItem.Create)
+			r.Get("/", handleItem.All)
+			r.Get("/{id}", handleItem.Get)
+			r.Put("/{id}", handleItem.Update)
+			r.Delete("/{id}", handleItem.Delete)
 		})
-
 	})
 
 	r.Get("/app.css", handleWebTemplate.Static)
