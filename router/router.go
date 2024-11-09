@@ -24,13 +24,19 @@ func initTemplate() (*repository.WebPageData, *template.Template) {
 func NewRouter(db *sql.DB) *chi.Mux {
 	r := chi.NewRouter()
 
+	handleCategory := handler.InitCategoryHandler(*service.InitCategoryService(*repository.InitCategoryRepo(db)))
+	handleItem := handler.InitItemHandler(*service.InitItemService(*repository.InitItemRepo(db)))
 	handleWebTemplate := handler.InitWebPageHandler(*service.InitWebPageService(*repository.InitWebPageRepo(initTemplate())))
 
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/categories", func(r chi.Router) {
-			r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			r.Get("/", func(w http.ResponseWriter, r *http.Request) {})
+			r.Post("/", handleCategory.Create)
+		})
 
-			})
+		r.Route("/items", func(r chi.Router) {
+			r.Get("/", func(w http.ResponseWriter, r *http.Request) {})
+			r.Post("/", handleItem.Create)
 		})
 
 	})
