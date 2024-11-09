@@ -29,7 +29,7 @@ func (handler InvestmentHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 	depreciation, err := handler.InvestmentService.Get(id)
 	if err != nil {
-		lib.JsonResponse(w).Fail(0, "Barang tidak ditemukan")
+		lib.JsonResponse(w).Fail(0, err.Error())
 		return
 	}
 	lib.JsonResponse(w).Success(0, "", depreciation)
