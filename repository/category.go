@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"project/model"
 )
 
@@ -42,23 +43,39 @@ func (repo *Category) All() ([]model.Category, error) {
 	return categories, nil
 }
 
-func (repo *Category) Get(category *model.Category) error {
-	query := `SELECT categories.name, categories.description FROM categories WHERE id = $1 AND deleted_at IS NULL`
-
-	if err := repo.Db.QueryRow(query, category.Id).Scan(&category.Name, &category.Description); err != nil {
-		return err
+func (repo *Category) Get(id int) (*model.Category, error) {
+	query := `SELECT categories.id, categories.name, categories.description
+		FROM categories WHERE categories.id = $1 AND deleted_at IS NULL`
+	var category model.Category
+	if err := repo.Db.QueryRow(query, id).Scan(&category.Id, &category.Name, &category.Description); err != nil {
+		return nil, err
 	}
-	return nil
+	return &category, nil
 }
 
-func (repo *Category) Delete(id int) (int64, error) {
-	query := `UPDATE categories SET deleted_at=NOW() WHERE id = $1 AND deleted_at IS NULL`
-	result, err := repo.Db.Exec(query, id)
+func (repo *Category) Update(category *model.Category) (int, error) {
+	query := `UPDATE categories SET name=$1,description=$2 WHERE id = $3 AND deleted_at IS NULL`
+	result, err := repo.Db.Exec(query, category.Name, category.Description, category.Id)
 
 	if err != nil {
 		return 0, err
 	}
 
+	nUpdated, err := result.RowsAffected()
+	return int(nUpdated), nil
+}
+
+func (repo *Category) Delete(id int) error {
+	query := `UPDATE categories SET deleted_at=NOW() WHERE id = $1 AND deleted_at IS NULL`
+	result, err := repo.Db.Exec(query, id)
+
+	if err != nil {
+		return err
+	}
+
 	nDeleted, err := result.RowsAffected()
-	return nDeleted, nil
+	if nDeleted == 0 {
+		return errors.New("Kategori tidak ditemukan")
+	}
+	return nil
 }
