@@ -4,7 +4,7 @@
 		"name": "20241108Project",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "39501286",
-		"_collection_link": "https://lumoshive-8617.postman.co/workspace/3742b519-d511-4017-b9e7-1abd32fcec7f/collection/39501286-63424cdb-0d31-4616-8e0a-ab059aad5a38?action=share&source=collection_link&creator=39501286"
+		"_collection_link": "https://lumoshive-8617.postman.co/workspace/Lumoshive-Workspace~3742b519-d511-4017-b9e7-1abd32fcec7f/collection/39501286-63424cdb-0d31-4616-8e0a-ab059aad5a38?action=share&source=collection_link&creator=39501286"
 	},
 	"item": [
 		{
@@ -17,7 +17,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Peralatan Dapur\",\n    \"description\": \"Kategori untuk peralatan dapur\"\n}",
+							"raw": "{\n    \"name\": \"Peralatan Elektronik\",\n    \"description\": \"Kategori untuk peralatan elektronik\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -63,7 +63,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/api/categories/1",
+							"raw": "localhost:8080/api/categories/3",
 							"host": [
 								"localhost"
 							],
@@ -71,7 +71,7 @@
 							"path": [
 								"api",
 								"categories",
-								"1"
+								"3"
 							]
 						}
 					},
@@ -84,7 +84,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Peralatan Elektronik\",\n    \"description\": \"Peralatan elektronik yang digunakan di kantor\"\n}",
+							"raw": "{\n    \"name\": \"Peralatan Elektronis\",\n    \"description\": \"Peralatan elektronik yang digunakan di kantor\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -92,7 +92,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/api/categories/1",
+							"raw": "localhost:8080/api/categories/3",
 							"host": [
 								"localhost"
 							],
@@ -100,7 +100,7 @@
 							"path": [
 								"api",
 								"categories",
-								"1"
+								"3"
 							]
 						}
 					},
@@ -207,7 +207,7 @@
 								{
 									"key": "photo_url",
 									"type": "file",
-									"src": []
+									"src": "/Users/paul/Downloads/file.pdf"
 								},
 								{
 									"key": "price",

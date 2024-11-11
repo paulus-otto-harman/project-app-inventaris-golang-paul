@@ -69,7 +69,7 @@ CREATE TABLE public.items (
     photo_url character varying(255),
     price money NOT NULL,
     purchase_date date NOT NULL,
-    depreciation_rate numeric(3,0) NOT NULL,
+    depreciation_rate numeric(3,0) DEFAULT 10 NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone,
     deleted_at timestamp with time zone
