@@ -2,8 +2,11 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -23,19 +26,22 @@ func InitItemHandler(itemService service.ItemService) ItemHandler {
 	return ItemHandler{ItemService: itemService}
 }
 
-func handleUploadedFile(inputName string, w http.ResponseWriter, r *http.Request) (string, error) {
+func handleUploadedFile(inputName string, mandatory bool, w http.ResponseWriter, r *http.Request) (string, error) {
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, "File size too large (Max 10MB)")
 		return "", err
 	}
 
 	file, fileHandler, err := r.FormFile(inputName)
+	if err != nil && mandatory {
+		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, fmt.Sprintf("%s is required", inputName))
+	}
 	if err != nil {
-		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, "Unable to upload file")
 		return "", err
 	}
 	defer file.Close()
 	fileExtension := fileHandler.Filename[strings.LastIndex(fileHandler.Filename, "."):]
+
 	fileRenamed := filepath.Join(config.UploadDir, uuid.New().String()+fileExtension)
 	destination, err := os.Create(fileRenamed)
 	if err != nil {
@@ -52,8 +58,9 @@ func handleUploadedFile(inputName string, w http.ResponseWriter, r *http.Request
 }
 
 func (handler ItemHandler) Create(w http.ResponseWriter, r *http.Request) {
-	photoUrl, err := handleUploadedFile("photo_url", w, r)
+	photoUrl, err := handleUploadedFile("photo_url", true, w, r)
 	if err != nil {
+		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, "Photo processing failed")
 		return
 	}
 
@@ -67,9 +74,16 @@ func (handler ItemHandler) Create(w http.ResponseWriter, r *http.Request) {
 		CategoryId:   categoryId,
 		Price:        price,
 		PurchaseDate: purchaseDate,
-		PhotoUrl:     photoUrl,
 	}
+
+	scheme := "https"
+	if r.TLS == nil {
+		scheme = "http"
+	}
+
+	item.PhotoUrl = strings.Join([]string{scheme, "://", r.Host, "/", photoUrl}, "")
 	if err := handler.ItemService.Create(item); err != nil {
+		log.Println(err)
 		lib.JsonResponse(w).Fail(http.StatusInternalServerError, "Unable to create item")
 		return
 	}
@@ -99,7 +113,7 @@ func (handler ItemHandler) All(w http.ResponseWriter, r *http.Request) {
 		lib.JsonResponse(w).Fail(http.StatusBadRequest, "Invalid Limit")
 		return
 	}
-	//log.Println(limit)
+
 	totalItems, totalPages, items, err := handler.ItemService.All(name, page, limit)
 	if err != nil {
 		lib.JsonResponse(w).Fail(0, err.Error())
@@ -123,6 +137,32 @@ func (handler ItemHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler ItemHandler) Update(w http.ResponseWriter, r *http.Request) {
+	photoUrl, err := handleUploadedFile("photo_url", false, w, r)
+
+	itemId, _ := strconv.Atoi(chi.URLParam(r, "id"))
+	name := r.FormValue("name")
+	categoryId, _ := strconv.Atoi(r.FormValue("category_id"))
+	price := r.FormValue("price")
+	purchaseDate := r.FormValue("purchase_date")
+	item := &model.Item{
+		Id:           itemId,
+		Name:         name,
+		CategoryId:   categoryId,
+		Price:        price,
+		PurchaseDate: purchaseDate,
+		PhotoUrl:     photoUrl,
+	}
+
+	oldFile, err := handler.ItemService.Update(item)
+	log.Println(oldFile, err)
+	//if err != nil {
+	//	lib.JsonResponse(w).Fail(http.StatusInternalServerError, "Unable to create item")
+	//	return
+	//}
+	//
+	//os.Remove(oldFile)
+	//
+	//lib.JsonResponse(w).Success(0, "Barang berhasil ditambahkan", item)
 
 }
 

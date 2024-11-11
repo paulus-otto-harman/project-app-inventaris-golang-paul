@@ -15,12 +15,17 @@ func InitItemRepo(db *sql.DB) *Item {
 }
 
 func (repo *Item) Create(item *model.Item) error {
+	query := "INSERT INTO items(name, category_id, photo_url, price, purchase_date) VALUES ($1, $2, $3, $4, $5) RETURNING id"
+	err := repo.Db.QueryRow(query, item.Name, item.CategoryId, item.PhotoUrl, item.Price, item.PurchaseDate).Scan(&item.Id)
+
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (repo *Item) All(criteria model.Search) (int, float64, []model.Item, error) {
 	pattern := "%" + criteria.Name + "%"
-	//log.Println(pattern)
 	var count int
 	queryCount := `SELECT COUNT(*)
 				FROM items
@@ -50,4 +55,9 @@ func (repo *Item) All(criteria model.Search) (int, float64, []model.Item, error)
 		return count, math.Ceil(float64(count) / float64(criteria.Limit)), []model.Item{}, err
 	}
 	return count, math.Ceil(float64(count) / float64(criteria.Limit)), items, nil
+}
+
+func (repo *Item) Update(item *model.Item) (string, error) {
+	//query := "UPDATE items"
+	return "", nil
 }
