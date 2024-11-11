@@ -3,6 +3,7 @@ package model
 type Item struct {
 	Id             int         `json:"id,omitempty"`
 	Name           string      `json:"name"`
+	CategoryId     int         `json:"-"`
 	Category       string      `json:"category"`
 	PhotoUrl       string      `json:"photo_url"`
 	Price          interface{} `json:"price"`

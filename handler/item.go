@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/google/uuid"
 	"io"
 	"net/http"
@@ -23,33 +22,57 @@ func InitItemHandler(itemService service.ItemService) ItemHandler {
 	return ItemHandler{ItemService: itemService}
 }
 
-func (handler ItemHandler) Create(w http.ResponseWriter, r *http.Request) {
+func handleUploadedFile(inputName string, w http.ResponseWriter, r *http.Request) (string, error) {
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, "File size too large (Max 10MB)")
-		return
+		return "", err
 	}
 
-	file, fileHandler, err := r.FormFile("photo")
+	file, fileHandler, err := r.FormFile(inputName)
 	if err != nil {
 		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, "Unable to upload file")
-		return
+		return "", err
 	}
 	defer file.Close()
 	fileExtension := fileHandler.Filename[strings.LastIndex(fileHandler.Filename, "."):]
-	renamed := filepath.Join("uploads", uuid.New().String()+fileExtension)
-	destination, err := os.Create(renamed)
+	fileRenamed := filepath.Join("uploads", uuid.New().String()+fileExtension)
+	destination, err := os.Create(fileRenamed)
 	if err != nil {
-		fmt.Println(err)
-		return
+		lib.JsonResponse(w).Fail(http.StatusInternalServerError, "Unable to store file at server")
+		return "", err
 	}
 	defer destination.Close()
 
-	_, err = io.Copy(destination, file)
+	if _, err = io.Copy(destination, file); err != nil {
+		lib.JsonResponse(w).Fail(http.StatusInternalServerError, "Unable to store file at server")
+		return "", err
+	}
+	return fileRenamed, nil
+}
 
+func (handler ItemHandler) Create(w http.ResponseWriter, r *http.Request) {
+	photoUrl, err := handleUploadedFile("photo_url", w, r)
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
+
+	name := r.FormValue("name")
+	categoryId, _ := strconv.Atoi(r.FormValue("category_id"))
+	price := r.FormValue("price")
+	purchaseDate := r.FormValue("purchase_date")
+
+	item := &model.Item{
+		Name:         name,
+		CategoryId:   categoryId,
+		Price:        price,
+		PurchaseDate: purchaseDate,
+		PhotoUrl:     photoUrl,
+	}
+	if err := handler.ItemService.Create(item); err != nil {
+		lib.JsonResponse(w).Fail(http.StatusInternalServerError, "Unable to create item")
+		return
+	}
+	lib.JsonResponse(w).Success(0, "Barang berhasil ditambahkan", item)
 }
 
 func (handler ItemHandler) All(w http.ResponseWriter, r *http.Request) {
