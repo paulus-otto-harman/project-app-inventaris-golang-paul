@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"project/config"
 	"project/lib"
 	"project/model"
 	"project/service"
@@ -35,7 +36,7 @@ func handleUploadedFile(inputName string, w http.ResponseWriter, r *http.Request
 	}
 	defer file.Close()
 	fileExtension := fileHandler.Filename[strings.LastIndex(fileHandler.Filename, "."):]
-	fileRenamed := filepath.Join("uploads", uuid.New().String()+fileExtension)
+	fileRenamed := filepath.Join(config.UploadDir, uuid.New().String()+fileExtension)
 	destination, err := os.Create(fileRenamed)
 	if err != nil {
 		lib.JsonResponse(w).Fail(http.StatusInternalServerError, "Unable to store file at server")
