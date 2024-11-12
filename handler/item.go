@@ -178,5 +178,18 @@ func (handler ItemHandler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler ItemHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		lib.JsonResponse(w).Fail(http.StatusBadRequest, "Invalid Item ID")
+		return
+	}
 
+	if err := handler.ItemService.Delete(id); err != nil {
+		if strings.Contains(err.Error(), "tidak ditemukan") {
+			lib.JsonResponse(w).Fail(http.StatusNotFound, "Barang tidak ditemukan")
+		}
+		lib.JsonResponse(w).Fail(http.StatusBadRequest, err.Error())
+		return
+	}
+	lib.JsonResponse(w).Success(http.StatusOK, "Barang berhasil dihapus", nil)
 }

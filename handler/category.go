@@ -118,5 +118,5 @@ func (handler CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		lib.JsonResponse(w).Fail(http.StatusBadRequest, err.Error())
 		return
 	}
-	lib.JsonResponse(w).Success(http.StatusNoContent, "Kategori tidak ditemukan", nil)
+	lib.JsonResponse(w).Success(http.StatusOK, "Kategori berhasil dihapus", nil)
 }

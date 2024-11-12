@@ -33,3 +33,7 @@ func (itemService ItemService) Get(id int) (*model.Item, error) {
 func (itemService ItemService) Update(item *model.Item) (string, error) {
 	return itemService.ItemRepo.Update(item)
 }
+
+func (itemService ItemService) Delete(id int) error {
+	return itemService.ItemRepo.Delete(id)
+}

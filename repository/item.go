@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"math"
 	"project/model"
 )
@@ -71,4 +72,19 @@ func (repo *Item) Get(id int) (*model.Item, error) {
 func (repo *Item) Update(item *model.Item) (string, error) {
 	//query := "UPDATE items"
 	return "", nil
+}
+
+func (repo *Item) Delete(id int) error {
+	query := `UPDATE items SET deleted_at=NOW() WHERE id = $1 AND deleted_at IS NULL`
+	result, err := repo.Db.Exec(query, id)
+
+	if err != nil {
+		return err
+	}
+
+	nDeleted, err := result.RowsAffected()
+	if nDeleted == 0 {
+		return errors.New("Barang tidak ditemukan")
+	}
+	return nil
 }
