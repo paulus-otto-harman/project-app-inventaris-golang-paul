@@ -149,6 +149,10 @@ func (handler ItemHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 func (handler ItemHandler) Update(w http.ResponseWriter, r *http.Request) {
 	photoUrl, err := handleUploadedFile("photo_url", false, w, r)
+	if err != nil {
+		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, "Photo processing failed")
+		return
+	}
 
 	itemId, _ := strconv.Atoi(chi.URLParam(r, "id"))
 	name := r.FormValue("name")
@@ -164,8 +168,16 @@ func (handler ItemHandler) Update(w http.ResponseWriter, r *http.Request) {
 		PhotoUrl:     photoUrl,
 	}
 
-	oldFile, err := handler.ItemService.Update(item)
-	log.Println(oldFile, err)
+	updated, err := handler.ItemService.Update(item)
+	log.Println("handler, updated", updated)
+	if updated == 0 {
+		lib.JsonResponse(w).Fail(http.StatusNotFound, "Barang tidak ditemukan")
+	}
+
+	lib.JsonResponse(w).Success(http.StatusOK, "Barang berhasil diperbarui", item)
+
+	//TODO : remove previous Photo when it's successfully replaced
+
 	//if err != nil {
 	//	lib.JsonResponse(w).Fail(http.StatusInternalServerError, "Unable to create item")
 	//	return

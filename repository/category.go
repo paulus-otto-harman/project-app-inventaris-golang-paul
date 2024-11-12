@@ -54,7 +54,7 @@ func (repo *Category) Get(id int) (*model.Category, error) {
 }
 
 func (repo *Category) Update(category *model.Category) (int, error) {
-	query := `UPDATE categories SET name=$1,description=$2 WHERE id = $3 AND deleted_at IS NULL`
+	query := `UPDATE categories SET name=$1,description=$2,updated_at=NOW() WHERE id = $3 AND deleted_at IS NULL`
 	result, err := repo.Db.Exec(query, category.Name, category.Description, category.Id)
 
 	if err != nil {

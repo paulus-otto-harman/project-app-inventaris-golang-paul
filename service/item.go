@@ -30,7 +30,7 @@ func (itemService ItemService) Get(id int) (*model.Item, error) {
 	return itemService.ItemRepo.Get(id)
 }
 
-func (itemService ItemService) Update(item *model.Item) (string, error) {
+func (itemService ItemService) Update(item *model.Item) (int, error) {
 	return itemService.ItemRepo.Update(item)
 }
 

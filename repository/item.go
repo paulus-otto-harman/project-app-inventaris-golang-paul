@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"math"
 	"project/model"
 )
@@ -69,9 +70,20 @@ func (repo *Item) Get(id int) (*model.Item, error) {
 	return &item, nil
 }
 
-func (repo *Item) Update(item *model.Item) (string, error) {
-	//query := "UPDATE items"
-	return "", nil
+func (repo *Item) Update(item *model.Item) (int, error) {
+	query := `UPDATE items SET name=$1,category_id=$2,photo_url=$3,price=$4,purchase_date=$5,updated_at=NOW() WHERE id = $6 AND deleted_at IS NULL`
+	result, err := repo.Db.Exec(query, item.Name, item.CategoryId, item.PhotoUrl, item.Price, item.PurchaseDate, item.Id)
+
+	if err != nil {
+		log.Println("repository error", err.Error())
+		return 0, err
+	}
+
+	nUpdated, err := result.RowsAffected()
+	if err != nil {
+		log.Println("repository error, row affected", err.Error())
+	}
+	return int(nUpdated), nil
 }
 
 func (repo *Item) Delete(id int) error {
