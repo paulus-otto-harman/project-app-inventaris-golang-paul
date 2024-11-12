@@ -133,7 +133,18 @@ func (handler ItemHandler) All(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler ItemHandler) Get(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		lib.JsonResponse(w).Fail(http.StatusBadRequest, "Invalid Item ID")
+		return
+	}
 
+	item, err := handler.ItemService.Get(id)
+	if err != nil {
+		lib.JsonResponse(w).Fail(http.StatusNotFound, "Barang tidak ditemukan")
+		return
+	}
+	lib.JsonResponse(w).Success(http.StatusOK, "", item)
 }
 
 func (handler ItemHandler) Update(w http.ResponseWriter, r *http.Request) {

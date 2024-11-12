@@ -26,6 +26,10 @@ func (itemService ItemService) All(name string, page int, limit int) (int, float
 	return itemService.ItemRepo.All(criteria)
 }
 
+func (itemService ItemService) Get(id int) (*model.Item, error) {
+	return itemService.ItemRepo.Get(id)
+}
+
 func (itemService ItemService) Update(item *model.Item) (string, error) {
 	return itemService.ItemRepo.Update(item)
 }

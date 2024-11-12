@@ -57,6 +57,17 @@ func (repo *Item) All(criteria model.Search) (int, float64, []model.Item, error)
 	return count, math.Ceil(float64(count) / float64(criteria.Limit)), items, nil
 }
 
+func (repo *Item) Get(id int) (*model.Item, error) {
+	query := `SELECT items.id, items.name, categories.name, photo_url,price,purchase_date,current_date-purchase_date
+		FROM items JOIN categories ON categories.id = items.category_id
+		WHERE items.id = $1 AND items.deleted_at IS NULL`
+	var item model.Item
+	if err := repo.Db.QueryRow(query, id).Scan(&item.Id, &item.Name, &item.Category, &item.PhotoUrl, &item.Price, &item.PurchaseDate, &item.TotalUsageDays); err != nil {
+		return nil, err
+	}
+	return &item, nil
+}
+
 func (repo *Item) Update(item *model.Item) (string, error) {
 	//query := "UPDATE items"
 	return "", nil
