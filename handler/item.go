@@ -2,15 +2,10 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
-	"io"
+	gola "github.com/paulus-otto-harman/golang-module/web"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
-	"project/config"
 	"project/lib"
 	"project/model"
 	"project/service"
@@ -26,40 +21,9 @@ func InitItemHandler(itemService service.ItemService) ItemHandler {
 	return ItemHandler{ItemService: itemService}
 }
 
-func handleUploadedFile(inputName string, mandatory bool, w http.ResponseWriter, r *http.Request) (string, error) {
-	if err := r.ParseMultipartForm(10 << 20); err != nil {
-		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, "File size too large (Max 10MB)")
-		return "", err
-	}
-
-	file, fileHandler, err := r.FormFile(inputName)
-	if err != nil && mandatory {
-		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, fmt.Sprintf("%s is required", inputName))
-	}
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-	fileExtension := fileHandler.Filename[strings.LastIndex(fileHandler.Filename, "."):]
-
-	fileRenamed := filepath.Join(config.UploadDir, uuid.New().String()+fileExtension)
-	destination, err := os.Create(fileRenamed)
-	if err != nil {
-		lib.JsonResponse(w).Fail(http.StatusInternalServerError, "Unable to store file at server")
-		return "", err
-	}
-	defer destination.Close()
-
-	if _, err = io.Copy(destination, file); err != nil {
-		lib.JsonResponse(w).Fail(http.StatusInternalServerError, "Unable to store file at server")
-		return "", err
-	}
-	return fileRenamed, nil
-}
-
 func (handler ItemHandler) Create(w http.ResponseWriter, r *http.Request) {
-	photoUrl, err := handleUploadedFile("photo_url", true, w, r)
-	if err != nil {
+	file := gola.StoreUploadedFile("photo_url", true, r)
+	if file.Error != nil {
 		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, "Photo processing failed")
 		return
 	}
@@ -74,14 +38,9 @@ func (handler ItemHandler) Create(w http.ResponseWriter, r *http.Request) {
 		CategoryId:   categoryId,
 		Price:        price,
 		PurchaseDate: purchaseDate,
+		PhotoUrl:     file.Uploaded.FullUrl,
 	}
 
-	scheme := "https"
-	if r.TLS == nil {
-		scheme = "http"
-	}
-
-	item.PhotoUrl = strings.Join([]string{scheme, "://", r.Host, "/", photoUrl}, "")
 	if err := handler.ItemService.Create(item); err != nil {
 		log.Println(err)
 		lib.JsonResponse(w).Fail(http.StatusInternalServerError, "Unable to create item")
@@ -148,8 +107,8 @@ func (handler ItemHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler ItemHandler) Update(w http.ResponseWriter, r *http.Request) {
-	photoUrl, err := handleUploadedFile("photo_url", false, w, r)
-	if err != nil {
+	file := gola.StoreUploadedFile("photo_url", true, r)
+	if file.Error != nil {
 		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, "Photo processing failed")
 		return
 	}
@@ -165,10 +124,10 @@ func (handler ItemHandler) Update(w http.ResponseWriter, r *http.Request) {
 		CategoryId:   categoryId,
 		Price:        price,
 		PurchaseDate: purchaseDate,
-		PhotoUrl:     photoUrl,
+		PhotoUrl:     file.Uploaded.FullUrl,
 	}
 
-	updated, err := handler.ItemService.Update(item)
+	updated, _ := handler.ItemService.Update(item)
 	log.Println("handler, updated", updated)
 	if updated == 0 {
 		lib.JsonResponse(w).Fail(http.StatusNotFound, "Barang tidak ditemukan")
