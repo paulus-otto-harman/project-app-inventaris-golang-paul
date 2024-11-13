@@ -8,4 +8,4 @@ require github.com/go-chi/chi/v5 v5.1.0
 
 require github.com/google/uuid v1.6.0
 
-require github.com/paulus-otto-harman/golang-module v1.1.7 // indirect
+require github.com/paulus-otto-harman/golang-module v1.2.0 // indirect

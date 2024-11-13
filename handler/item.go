@@ -6,6 +6,7 @@ import (
 	gola "github.com/paulus-otto-harman/golang-module/web"
 	"log"
 	"net/http"
+	"project/config"
 	"project/lib"
 	"project/model"
 	"project/service"
@@ -22,7 +23,7 @@ func InitItemHandler(itemService service.ItemService) ItemHandler {
 }
 
 func (handler ItemHandler) Create(w http.ResponseWriter, r *http.Request) {
-	file := gola.StoreUploadedFile("photo_url", true, r)
+	file := gola.StoreUploadedFile("photo_url", true, r, config.UploadDir)
 	if file.Error != nil {
 		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, "Photo processing failed")
 		return
@@ -107,7 +108,7 @@ func (handler ItemHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (handler ItemHandler) Update(w http.ResponseWriter, r *http.Request) {
-	file := gola.StoreUploadedFile("photo_url", true, r)
+	file := gola.StoreUploadedFile("photo_url", true, r, config.UploadDir)
 	if file.Error != nil {
 		lib.JsonResponse(w).Fail(http.StatusUnprocessableEntity, "Photo processing failed")
 		return
